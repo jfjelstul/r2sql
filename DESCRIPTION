@@ -1,5 +1,5 @@
 Package: r2sql
-Title: Generate SQL Code to Add Data to an SQL Database
+Title: Generate an SQL Script that Reads Data into an SQL Database
 Version: 0.1.0.9000
 Authors@R: person(given = "Joshua",
            family = "Fjelstul",
