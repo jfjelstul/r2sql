@@ -1,0 +1,15 @@
+Package: r2sql
+Title: Generate SQL Code to Add Data to an SQL Database
+Version: 0.1.0.9000
+Authors@R: person(given = "Joshua",
+           family = "Fjelstul",
+           role = c("aut", "cre"),
+           email = "joshfjelstul@gmail.com",
+           comment = c(ORCID = "0000-0002-9494-260X"))
+Description: This package provides a function that generates an SQL script that you can use to read datasets into an SQL or MariaDB database. The use case for this package is that you have one or more datasets, stored as .csv files in a local directory, or existing as data frames in your current R workspace, that you want to quickly read into an existing SQL or MariaDB database on a remote server. This function will generate an SQL script that creates a table for each dataset and quickly reads each dataset into the database.
+URL: https://github.com/jfjelstul/r2sql
+Date: 2021-05-21
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
