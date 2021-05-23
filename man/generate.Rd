@@ -62,11 +62,11 @@ database with the same name as one of the tables being created. You will get
 a warning about this every time you run the function.
 
 You will need to store a \code{.csv} file for each dataset on your server in
-the `server_path` directory before you run the SQL script or you will get SQL
-errors about not being able to find the files. The function generates these
-\code{.csv} files for you if you have not already prepared them and will
-properly convert \code{NA} values in \code{R} to \code{\\N} values in the SQL
-database.
+the \code{server_path} directory before you run the SQL script or you will
+get SQL errors about not being able to find the files. The function generates
+these \code{.csv} files for you if you have not already prepared them and
+will properly convert \code{NA} values in \code{R} to \code{\\N} values in
+the SQL database.
 
 If any of your datasets include a variable whose name is a reserved word in
 SQL, the function will automatically escape the variable name in the
