@@ -29,12 +29,15 @@
 #' generated script.
 #'
 #' @param input A list of data frames or a vector of \code{.csv} file names.
-#' @param output_path The path for the local directory where the generated SQL
+#' @param txt_path The path for the local directory where the generated SQL
 #'   script will be saved. The path should end with a \code{/} but the function
 #'   will add one if it does not.
-#' @param output_file The name of the generated SQL script without a file
+#' @param txt_file The name of the generated SQL script without a file
 #'   extension. The SQL script will be saved as a \code{.txt} file. If you do
 #'   provide an extension, it will be replaced with \code{.txt}.
+#' @param txt_path The path for the local directory where the generated
+#'   \code{.csv} files will be saved. The path should end with a \code{/} but
+#'   the function will add one if it does not.
 #' @param server_path The path for the folder on the server where you will store
 #'   the \code{.csv} files to be added to the database. The path should end with
 #'   a \code{/} but the function will add one if it does not. This path is
@@ -45,7 +48,7 @@
 #'   vector for each data frame or \code{.csv} file provided in the \code{input}
 #'   argument.
 #' @param generate_files Defaults to \code{TRUE}. If \code{TRUE}, the function
-#'   will create a \code{.csv} file for each dataset in the \code{output_path}
+#'   will create a \code{.csv} file for each dataset in the \code{csv_path}
 #'   directory, which you can then transfer to your server. You need to put
 #'   these files in the \code{server_path} directory that you specify in order
 #'   for the script to work properly. The names of the files will be generated
@@ -54,7 +57,7 @@
 #' @return Writes a \code{.txt} file with SQL commands and (optionally)
 #'   \code{.csv} files in the \code{output_file} directory.
 #' @export
-generate <- function(input, table_names, output_path, output_file, server_path, generate_files = TRUE) {
+generate <- function(input, table_names, txt_path, txt_file, csv_path, server_path, generate_files = TRUE) {
 
   # create an empty list to hold the datasets
   datasets <- list()
@@ -78,7 +81,7 @@ generate <- function(input, table_names, output_path, output_file, server_path, 
   # if the user provides table names, overwrite the default names
   if (class(table_names) == "character") {
     if(length(table_names) == length(input)) {
-      if(all(stringr::str_detect(table_names, "^[a-z][a-z0-9]+$"))) {
+      if(all(stringr::str_detect(table_names, "^[a-z][_a-z0-9]+$"))) {
         names <- table_names
       } else {
         stop("'table_names' includes one or more invalid names")
@@ -90,15 +93,26 @@ generate <- function(input, table_names, output_path, output_file, server_path, 
     stop("'table_names' needs to be a character vector")
   }
 
-  # check output_path
-  if( class(output_path) != "character") {
-    stop("'output_path' needs to be a string")
+  # check txt_path
+  if( class(txt_path) != "character") {
+    stop("'txt_path' needs to be a string")
   }
-  if(length(output_path) != 1) {
-    stop("'output_path' needs to be a string")
+  if(length(txt_path) != 1) {
+    stop("'txt_path' needs to be a string")
   }
-  if (!stringr::str_detect(output_path, "/$")) {
-    output_path <- stringr::str_c(output_path, "/")
+  if (!stringr::str_detect(txt_path, "/$")) {
+    txt_path <- stringr::str_c(txt_path, "/")
+  }
+
+  # check csv_path
+  if( class(csv_path) != "character") {
+    stop("'csv_path' needs to be a string")
+  }
+  if(length(csv_path) != 1) {
+    stop("'csv_path' needs to be a string")
+  }
+  if (!stringr::str_detect(csv_path, "/$")) {
+    csv_path <- stringr::str_c(csv_path, "/")
   }
 
   # check server_path
@@ -112,15 +126,15 @@ generate <- function(input, table_names, output_path, output_file, server_path, 
     server_path <- stringr::str_c(server_path, "/")
   }
 
-  # check output_file
-  if( class(output_file) != "character") {
-    stop("'output_file' needs to be a string")
+  # check txt_file
+  if( class(txt_file) != "character") {
+    stop("'txt_file' needs to be a string")
   }
-  if(length(output_file) != 1) {
-    stop("'output_file' needs to be a string")
+  if(length(txt_file) != 1) {
+    stop("'txt_file' needs to be a string")
   }
-  output_file <- stringr::str_remove(output_file, "\\.[A-Za-z]+$")
-  output_file <- stringr::str_c(output_file, ".txt")
+  txt_file <- stringr::str_remove(txt_file, "\\.[A-Za-z]+$")
+  txt_file <- stringr::str_c(txt_file, ".txt")
 
   # check generate_files
   if (class(generate_files) != "logical") {
@@ -137,7 +151,7 @@ generate <- function(input, table_names, output_path, output_file, server_path, 
     dataset_i <- datasets[[i]]
 
     # get the name of the dataset
-    name_i <- table_names[1]
+    name_i <- table_names[i]
 
     # get the name of each variable
     variables_i <- names(dataset_i)
@@ -199,17 +213,17 @@ generate <- function(input, table_names, output_path, output_file, server_path, 
   # write the SQL script
   script <- unlist(script)
   script <- c("", "/* script generated automatically by the r2sql R package by Joshua C. Fjelstul, Ph.D. */", "", script)
-  writeLines(script, stringr::str_c(output_path, output_file))
+  writeLines(script, stringr::str_c(txt_path, txt_file))
 
   # print note
-  cat(stringr::str_c("OUTPUT: a .txt file with SQL commands was generated and saved to the directory \"", output_path, "\"\n"))
+  cat(stringr::str_c("OUTPUT: a .txt file with SQL commands was generated and saved to the directory \"", txt_path, "\"\n"))
 
   # generate the CSV files
   if (generate_files == TRUE) {
     for (i in 1:length(datasets)) {
       write.csv(
         datasets[[i]],
-        file = stringr::str_c(output_path, table_names[i], ".csv"),
+        file = stringr::str_c(csv_path, table_names[i], ".csv"),
         row.names = FALSE,
         quote = TRUE,
         na = "\\N"
@@ -217,8 +231,8 @@ generate <- function(input, table_names, output_path, output_file, server_path, 
     }
 
     # print notes
-    cat(stringr::str_c("OUTPUT: " , length(datasets), " .csv files were created and saved to the directory \"", output_path ,"\"\n"))
-    cat(stringr::str_c("NOTE: you need to move the .csv files created by this function to your server and store them in the directory \"", output_path, "\" before you run the SQL commands or you will get SQL errors about not being able to find the files\n"))
+    cat(stringr::str_c("OUTPUT: " , length(datasets), " .csv files were created and saved to the directory \"", csv_path ,"\"\n"))
+    cat(stringr::str_c("NOTE: you need to move the .csv files created by this function to your server and store them in the directory \"", csv_path, "\" before you run the SQL commands or you will get SQL errors about not being able to find the files\n"))
 
   } else {
 

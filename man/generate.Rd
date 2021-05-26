@@ -7,8 +7,9 @@
 generate(
   input,
   table_names,
-  output_path,
-  output_file,
+  txt_path,
+  txt_file,
+  csv_path,
   server_path,
   generate_files = TRUE
 )
@@ -21,11 +22,11 @@ should be created in the SQL database. There should be one element in the
 vector for each data frame or \code{.csv} file provided in the \code{input}
 argument.}
 
-\item{output_path}{The path for the local directory where the generated SQL
-script will be saved. The path should end with a \code{/} but the function
-will add one if it does not.}
+\item{txt_path}{The path for the local directory where the generated
+\code{.csv} files will be saved. The path should end with a \code{/} but
+the function will add one if it does not.}
 
-\item{output_file}{The name of the generated SQL script without a file
+\item{txt_file}{The name of the generated SQL script without a file
 extension. The SQL script will be saved as a \code{.txt} file. If you do
 provide an extension, it will be replaced with \code{.txt}.}
 
