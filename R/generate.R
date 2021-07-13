@@ -156,6 +156,7 @@ generate <- function(input, table_names, txt_path, txt_file, csv_path, server_pa
     # get the name of each variable
     variables_i <- names(dataset_i)
     variables_i[variables_i == "time"] <- "`time`"
+    variables_i[variables_i == "group"] <- "`group`"
 
     # get the class of each variable
     classes_i <- NULL
