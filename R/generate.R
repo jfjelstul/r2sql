@@ -102,6 +102,9 @@ generate <- function(input, table_names, txt_path, txt_file, csv_path, server_pa
   }
   if (!stringr::str_detect(txt_path, "/$")) {
     txt_path <- stringr::str_c(txt_path, "/")
+    if (txt_path == "/") {
+      txt_path <- ""
+    }
   }
 
   # check csv_path
@@ -155,8 +158,7 @@ generate <- function(input, table_names, txt_path, txt_file, csv_path, server_pa
 
     # get the name of each variable
     variables_i <- names(dataset_i)
-    variables_i[variables_i == "time"] <- "`time`"
-    variables_i[variables_i == "group"] <- "`group`"
+    variables_i <- stringr::str_c("`", variables_i, "`")
 
     # get the class of each variable
     classes_i <- NULL
